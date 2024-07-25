@@ -1,8 +1,8 @@
-import { First } from './Components/First.js';
+import { Task } from './Components/Task.js';
 
 function App() {
   return (
-      <First/>
+      <Task/>
   );
 }
 
