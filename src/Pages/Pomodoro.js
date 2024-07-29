@@ -11,11 +11,15 @@ const Pomodoro = () => {
   };
 
   const [time, setTime] = useState(30 * 60); // it must be 30 minutes
-  const [breakTime, breakSetTime] = useState(0.05 * 60); // it must be 5 minutes
+
+  const [breakTime, breakSetTime] = useState(5 * 60); // it must be 5 minutes
+
   const [restTime, restSetTime] = useState(15 * 60); // it must be 15 minutes
 
   const [isFocusActive, setIsFocusActive] = useState(false);
+
   const [isBreakActive, setIsBreakActive] = useState(false);
+
   const [isRestActive, setIsRestActive] = useState(false);
 
   const alarmRef = useRef(null);
@@ -63,11 +67,15 @@ const Pomodoro = () => {
   }, [isRestActive, restTime]);
 
   const handleStart = () => setIsFocusActive(true);
+
   const breakHandleStart = () => setIsBreakActive(true);
+
   const restHandleStart = () => setIsRestActive(true);
 
   const handlePause = () => setIsFocusActive(false);
+
   const breakHandlePause = () => setIsBreakActive(false);
+
   const restHandlePause = () => setIsRestActive(false);
 
   const handleReset = () => {
@@ -77,7 +85,7 @@ const Pomodoro = () => {
 
   const breakHandleReset = () => {
     setIsBreakActive(false);
-    breakSetTime(0.05 * 60);
+    breakSetTime(5 * 60);
   };
 
   const restHandleReset = () => {
