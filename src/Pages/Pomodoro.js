@@ -267,7 +267,6 @@ const Pomodoro = () => {
           </div>
         </div>
       </div>
-
       <audio ref={alarmRef} src={alarmSound} />
     </>
   );
