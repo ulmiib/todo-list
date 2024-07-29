@@ -9,7 +9,7 @@ export default function Navbar() {
       w-[100vw] 
       h-[100px] 
       bg-[black] 
-      text-[white] 
+      text-[#28212F] 
       flex  
       items-center 
       place-content-evenly

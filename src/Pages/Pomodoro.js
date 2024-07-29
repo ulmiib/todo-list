@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import restartIcon from "../Images/restart.png";
 import settingsIcon from "../Images/settings.png";
+import alarmSound from "../AlarmSounds/Name Ringtone 1722219504490.mp3"
 
 const Pomodoro = () => {
   const [activeTab, setActiveTab] = useState("Focus");
@@ -12,7 +13,15 @@ const Pomodoro = () => {
   const [time, setTime] = useState(30 * 60); // 30 minutes
   const [breakTime, breakSetTime] = useState(5 * 60); // 5 minutes
   const [restTime, restSetTime] = useState(15 * 60); // 15 minutes
+
   const [isActive, setIsActive] = useState(false);
+  const [isBreakActive, setIsBreakActive] = useState(false);
+  const [isRestActive, setIsRestActive] = useState(false);
+
+  const alarmRef = useRef(alarmSound);
+
+
+
 
   useEffect(() => {
     let timer;
@@ -20,55 +29,68 @@ const Pomodoro = () => {
       timer = setInterval(() => setTime((prevTime) => prevTime - 1), 1000);
     } else if (time === 0) {
       setIsActive(false);
+      alarmRef.current.play();
     }
+
+
+
+
 
     return () => clearInterval(timer);
   }, [isActive, time]);
 
   useEffect(() => {
     let breakTimer;
-    if (isActive && breakTime > 0) {
-      breakTimer = setInterval(() => breakSetTime((prevTime) => prevTime - 1), 1000);
+    if (isBreakActive && breakTime > 0) {
+      breakTimer = setInterval(
+        () => breakSetTime((prevTime) => prevTime - 1),
+        1000
+      );
     } else if (breakTime === 0) {
-      setIsActive(false);
+      setIsBreakActive(false);
+      alarmRef.current.play();
     }
 
     return () => clearInterval(breakTimer);
-  }, [isActive, breakTime]);
+  }, [isBreakActive, breakTime]);
 
   useEffect(() => {
     let restTimer;
-    if (isActive && restTime > 0) {
-      restTimer = setInterval(() => restSetTime((prevTime) => prevTime - 1), 1000);
+    if (isRestActive && restTime > 0) {
+      restTimer = setInterval(
+        () => restSetTime((prevTime) => prevTime - 1),
+        1000
+      );
     } else if (restTime === 0) {
-      setIsActive(false);
+      setIsRestActive(false);
+      alarmRef.current.play();
     }
 
     return () => clearInterval(restTimer);
-  }, [isActive, restTime]);
+  }, [isRestActive, restTime]);
 
   const handleStart = () => setIsActive(true);
 
   const breakHandleStart = () => setIsActive(true);
-  
+
   const restHandleStart = () => setIsActive(true);
-  
+
   const handlePause = () => setIsActive(false);
-  
+
   const breakHandlePause = () => setIsActive(false);
-  
+
   const restHandlePause = () => setIsActive(false);
-  
+
   const handleReset = () => {
     setIsActive(false);
     setTime(30 * 60);
   };
-  
+
   const breakHandleReset = () => {
     setIsActive(false);
     breakSetTime(5 * 60);
   };
-  
+
   const restHandleReset = () => {
     setIsActive(false);
     restSetTime(15 * 60);
@@ -83,6 +105,21 @@ const Pomodoro = () => {
     )}`;
   };
 
+  const breakFormatTime = (breakTime) => {
+    const breakMinutes = Math.floor(breakTime / 60);
+    const breakSeconds = breakTime % 60;
+    return `${String(breakMinutes).padStart(2, "0")}:${String(
+      breakSeconds
+    ).padStart(2, "0")}`;
+  };
+
+  const restFormatTime = (restTime) => {
+    const restMinutes = Math.floor(restTime / 60);
+    const restSeconds = restTime % 60;
+    return `${String(restMinutes).padStart(2, "0")}:${String(
+      restSeconds
+    ).padStart(2, "0")}`;
+  };
   return (
     <>
       <div className="w-screen h-screen bg-[#0D0714] text-[white] flex justify-center items-center">
@@ -170,7 +207,7 @@ const Pomodoro = () => {
             {activeTab === "Break" && (
               <div>
                 <div className="font-medium text-[64px] flex justify-center items-center">
-                  {formatTime(breakTime)}
+                  {breakFormatTime(breakTime)}
                 </div>
 
                 <div className=" w-[192px] h-[40px] flex flex-row justify-between items-center">
@@ -181,7 +218,7 @@ const Pomodoro = () => {
                     <img src={restartIcon} alt="icon" />
                   </button>
 
-                  {!isActive && time > 0 && (
+                  {!isBreakActive && breakTime > 0 && (
                     <button
                       onClick={breakHandleStart}
                       className="w-[96px] h-[35px] rounded-[8px] bg-[#A0CCFF] text-[#232931] font-medium text-[16px]"
@@ -190,7 +227,7 @@ const Pomodoro = () => {
                     </button>
                   )}
 
-                  {isActive && (
+                  {isBreakActive && (
                     <button
                       onClick={breakHandlePause}
                       className="w-[96px] h-[35px] rounded-[8px] bg-[#A0CCFF] text-[#232931] font-medium text-[16px]"
@@ -209,7 +246,7 @@ const Pomodoro = () => {
             {activeTab === "Rest" && (
               <div>
                 <div className="font-medium text-[64px] flex justify-center items-center">
-                  {formatTime(restTime)}
+                  {restFormatTime(restTime)}
                 </div>
 
                 <div className=" w-[192px] h-[40px] flex flex-row justify-between items-center">
@@ -220,7 +257,7 @@ const Pomodoro = () => {
                     <img src={restartIcon} alt="icon" />
                   </button>
 
-                  {!isActive && restTime > 0 && (
+                  {!isRestActive && restTime > 0 && (
                     <button
                       onClick={restHandleStart}
                       className="w-[96px] h-[35px] rounded-[8px] bg-[#A0CCFF] text-[#232931] font-medium text-[16px]"
@@ -229,7 +266,7 @@ const Pomodoro = () => {
                     </button>
                   )}
 
-                  {isActive && (
+                  {isRestActive && (
                     <button
                       onClick={restHandlePause}
                       className="w-[96px] h-[35px] rounded-[8px] bg-[#A0CCFF] text-[#232931] font-medium text-[16px]"
@@ -251,4 +288,86 @@ const Pomodoro = () => {
   );
 };
 
-export default Pomodoro;
+export default Pomodoro
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect } from 'react';
+
+// const Timer = ({ id, isActive, onStartStop, onReset }) => {
+//   const [seconds, setSeconds] = useState(0);
+
+//   useEffect(() => {
+//     let interval = null;
+//     if (isActive) {
+//       interval = setInterval(() => {
+//         setSeconds(prevSeconds => prevSeconds + 1);
+//       }, 1000);
+//     } else if (!isActive && seconds !== 0) {
+//       clearInterval(interval);
+//     }
+//     return () => clearInterval(interval);
+//   }, [isActive, seconds]);
+
+//   const formatTime = (time) => String(time).padStart(2, '0');
+
+//   const minutes = Math.floor(seconds / 60);
+//   const displaySeconds = seconds % 60;
+
+//   return (
+//     <div className="bg-white p-4 rounded-lg shadow-lg">
+//       <div className="text-2xl font-bold mb-4">
+//         {formatTime(minutes)}:{formatTime(displaySeconds)}
+//       </div>
+//       <div className="flex gap-2">
+//         <button
+//           onClick={() => onStartStop(id)}
+//           className={`py-2 px-4 rounded ${
+//             isActive ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'
+//           } text-white`}
+//         >
+//           {isActive ? 'Pause' : 'Start'}
+//         </button>
+//         <button
+//           onClick={() => onReset(id)}
+//           className="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded"
+//         >
+//           Reset
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Timer;
+
